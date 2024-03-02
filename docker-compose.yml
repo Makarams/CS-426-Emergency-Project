@@ -1,0 +1,64 @@
+version: "3.8"
+services:
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: frontend
+    image: frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - makaradb
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: backend
+    image: backend
+    ports:
+      - "81:80"
+    depends_on:
+      - api
+      - makaradb
+
+  api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    container_name: api
+    image: api
+    ports:
+      - "82:80"
+    depends_on:
+      - makaradb
+
+  phpmyadmin:
+    build:
+      context: ./phpmyadmin
+      dockerfile: Dockerfile
+    image: phpmyadmin:phpmyadmin
+    ports:
+      - "89:80"
+    environment:
+      PMA_HOST: makaradb
+      PMA_USER: makara
+      PMA_PASSWORD: makara123
+    depends_on:
+      - makaradb
+
+  makaradb:
+    build:
+      context: ./makaradb
+      dockerfile: Dockerfile
+    image: makaradb
+    container_name: makaradb
+    restart: always
+    ports:
+      - "3309:3306"
+    environment:
+      MYSQL_DATABASE: emergency
+      MYSQL_USER: makara
+      MYSQL_PASSWORD: makara123
+      MYSQL_ROOT_PASSWORD: admin123
